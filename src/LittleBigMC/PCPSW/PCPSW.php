@@ -281,7 +281,7 @@ class PCPSW extends PluginBase implements Listener {
 		{
 			if(strtolower($area) == strtolower($arena))
 			{
-				unset($this->isprotected[$name]);
+				unset( $this->isprotected[ $name ] );
 			}
 		}
 	}
@@ -579,6 +579,9 @@ class GameSender extends PluginTask
 			foreach($arenas as $arena)
 			{
 				$time = $config->get($arena . "PlayTime");
+				$mins = floor($time / 60 % 60);
+				$secs = floor($time % 60);
+				if($secs < 10){ $secs = "0".$secs; }
 				$timeToStart = $config->get($arena . "StartTime");
 				$levelArena = $this->plugin->getServer()->getLevelByName($arena);
 				if($levelArena instanceof Level)
@@ -619,7 +622,8 @@ class GameSender extends PluginTask
 								{
 									foreach($playersArena as $pla)
 									{
-										$pla->sendTip("§l§8Players remaining: [§b" . $reds . "§8]");
+										$pla->sendTip("§l§8Players remaining: [§b" . $aop . "§8]");
+										$pla->sendPopup("§l§7Game ends in: §b".$mins. "§f:§b" .$secs);
 									}
 								}
 								
@@ -645,40 +649,18 @@ class GameSender extends PluginTask
 									break;
 									
 									default:
-									if($time >= 180)
+									if($time <= 0)
 									{
-										$time2 = $time - 180;
-										$minutes = $time2 / 60;
-										
-									} else {
-										$minutes = $time / 60;
-										if(is_int($minutes) && $minutes>0)
+										$spawn = $this->plugin->getServer()->getDefaultLevel()->getSafeSpawn();
+										$this->plugin->getServer()->getDefaultLevel()->loadChunk($spawn->getX(), $spawn->getZ());
+										foreach($playersArena as $pl)
 										{
-											foreach($playersArena as $pl)
-											{
-												$pl->sendMessage($this->prefix . " •> " . $minutes . " minutes remaining");
-											}
+											$pl->addTitle("§lGame Over","§cGame draw in map: §a" . $arena);
+											$pl->setHealth(20);
+											$this->plugin->leaveArena($pl);
+											$this->getResetmap()->reload($levelArena);
 										}
-										if($time == 30 || $time == 15 || $time == 10 || $time ==5 || $time ==4 || $time ==3 || $time ==2 || $time == 1)
-										{
-											foreach($playersArena as $pl)
-											{
-												$pl->sendMessage($this->prefix . " •> " . $time . " seconds remaining");
-											}
-										}
-										if($time <= 0)
-										{
-											$spawn = $this->plugin->getServer()->getDefaultLevel()->getSafeSpawn();
-											$this->plugin->getServer()->getDefaultLevel()->loadChunk($spawn->getX(), $spawn->getZ());
-											foreach($playersArena as $pl)
-											{
-												$pl->addTitle("§lGame Over","§cGame draw in map: §a" . $arena);
-												$pl->setHealth(20);
-												$this->plugin->leaveArena($pl);
-												$this->getResetmap()->reload($levelArena);
-											}
-											$time = 780;
-										}
+										$time = 780;
 									}
 								}
 								$config->set($arena . "PlayTime", $time);
