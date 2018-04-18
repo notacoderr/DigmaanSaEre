@@ -1,8 +1,8 @@
 <?php
 
-namespace LittleBigMC\MicroBattles;
+namespace LittleBigMC\PCPSW;
 
-use LittleBigMC\MicroBattles\GameSender;
+use LittleBigMC\PCPSW\GameSender;
 
 Class Resetmap
 {
