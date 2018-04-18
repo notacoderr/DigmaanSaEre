@@ -1,12 +1,12 @@
 <?php
 
-namespace LittleBigMC\MicroBattles;
+namespace LittleBigMC\PCPSW;
 
-use LittleBigMC\MicroBattles\MicroBattles;
+use LittleBigMC\PCPSW\PCPSW;
 
 Class RefreshArena
 {
-    public function __construct(MicroBattles $main){
+    public function __construct(PCPSW $main){
         $this->main = $main;
     }
     
